@@ -110,6 +110,14 @@ body {
   gap: 20px;
 }
 
+/* .card fija display:flex, lo que le gana en cascada al display:none por
+   defecto del atributo hidden -- sin esto, una pantalla marcada
+   hidden=true por JS (mapScreen al entrar a una sección, por ejemplo)
+   se seguía viendo igual. */
+[hidden] {
+  display: none !important;
+}
+
 .card__question {
   margin: 0;
   font-size: 1.4rem;
