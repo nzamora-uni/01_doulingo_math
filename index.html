@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reto Matemático</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="app__header" id="game-header">
+      <div class="progress">
+        <span id="progress-label">Pregunta 1 de 20</span>
+        <div class="progress__bar">
+          <div class="progress__fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stats__score" id="score-label">Puntos: 0</div>
+        <div class="stats__lives" id="lives-label" aria-label="Vidas restantes">
+          <span class="heart" data-life="1">❤</span>
+          <span class="heart" data-life="2">❤</span>
+          <span class="heart" data-life="3">❤</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="card" id="question-screen">
+      <h1 class="card__question" id="question-text">Cargando pregunta…</h1>
+      <div class="options" id="options-container"></div>
+      <p class="feedback" id="feedback-text" hidden></p>
+      <button class="btn btn--primary" id="continue-btn" hidden>Continuar</button>
+    </section>
+
+    <section class="card card--result" id="result-screen" hidden>
+      <h1 class="result__title" id="result-title">¡Reto terminado!</h1>
+      <p class="result__stat" id="result-score">Aciertos: 0 de 20</p>
+      <p class="result__stat" id="result-percentage">Porcentaje: 0%</p>
+      <p class="result__message" id="result-message"></p>
+      <button class="btn btn--primary" id="restart-btn">Jugar de nuevo</button>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+/* Reto Matemático — identidad visual propia (no relacionada con Duolingo) */
+
+:root {
+  --color-bg: #fdf6ec;
+  --color-primary: #2f6f5e;
+  --color-primary-dark: #1f4d40;
+  --color-accent: #f2a541;
+  --color-correct: #2e9e5b;
+  --color-correct-bg: #e3f7ea;
+  --color-incorrect: #d1493a;
+  --color-incorrect-bg: #fbe6e3;
+  --color-card: #ffffff;
+  --color-text: #2b2b2b;
+  --color-muted: #6b6b6b;
+  --radius: 16px;
+  --shadow: 0 8px 20px rgba(31, 77, 64, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", Verdana, Arial, sans-serif;
+  background: linear-gradient(180deg, var(--color-bg) 0%, #f6ecda 100%);
+  color: var(--color-text);
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.app {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.app__header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#progress-label {
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.progress__bar {
+  width: 100%;
+  height: 10px;
+  background: #e3d9c6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress__fill {
+  height: 100%;
+  width: 5%;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stats__score {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 1.05rem;
+}
+
+.stats__lives {
+  display: flex;
+  gap: 6px;
+  font-size: 1.4rem;
+}
+
+.heart {
+  color: var(--color-incorrect);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.heart--lost {
+  opacity: 0.25;
+  transform: scale(0.85);
+  color: var(--color-muted);
+}
+
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card__question {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  color: var(--color-primary-dark);
+  text-align: center;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.option-btn {
+  padding: 16px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid #d9cfba;
+  background: #fffdf8;
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.option-btn:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.option-btn:disabled {
+  cursor: not-allowed;
+}
+
+.option-btn--correct {
+  background: var(--color-correct-bg);
+  border-color: var(--color-correct);
+  color: var(--color-correct);
+}
+
+.option-btn--incorrect {
+  background: var(--color-incorrect-bg);
+  border-color: var(--color-incorrect);
+  color: var(--color-incorrect);
+}
+
+.feedback {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.feedback--correct {
+  color: var(--color-correct);
+  background: var(--color-correct-bg);
+}
+
+.feedback--incorrect {
+  color: var(--color-incorrect);
+  background: var(--color-incorrect-bg);
+}
+
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.card--result {
+  align-items: center;
+  text-align: center;
+}
+
+.result__title {
+  margin: 0;
+  color: var(--color-primary-dark);
+  font-size: 1.6rem;
+}
+
+.result__stat {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.result__message {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 1rem;
+}
+
+@media (max-width: 400px) {
+  .card {
+    padding: 20px 16px;
+  }
+
+  .card__question {
+    font-size: 1.2rem;
+  }
+}
