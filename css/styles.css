@@ -250,6 +250,15 @@ body {
   text-align: center;
 }
 
+.map__brand {
+  margin: 0;
+  color: var(--color-accent);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
 .map__title {
   margin: 0;
   color: var(--color-primary-dark);
@@ -286,7 +295,11 @@ body {
 .map__node:not(:last-child)::after {
   content: "";
   position: absolute;
-  bottom: -6px;
+  /* top: 100% (no bottom negativo) -- arranca justo debajo de todo el
+     contenido del nodo (círculo + etiqueta), nunca lo cruza. Antes,
+     bottom:-6px con height:34px terminaba invadiendo ~28px hacia arriba
+     dentro del propio nodo, cruzando el texto de la etiqueta. */
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: 4px;
