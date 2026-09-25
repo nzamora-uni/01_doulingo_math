@@ -8,9 +8,9 @@
 </head>
 <body>
   <main class="app">
-    <header class="app__header" id="game-header">
+    <header class="app__header" id="game-header" hidden>
       <div class="progress">
-        <span id="progress-label">Pregunta 1 de 20</span>
+        <span id="progress-label">Pregunta 1 de 4</span>
         <div class="progress__bar">
           <div class="progress__fill" id="progress-fill"></div>
         </div>
@@ -25,7 +25,15 @@
       </div>
     </header>
 
-    <section class="card" id="question-screen">
+    <section class="card card--map" id="map-screen">
+      <h1 class="map__title">Mapa del Reto Matemático</h1>
+      <p class="map__subtitle" id="map-subtitle">0 de 5 categorías completadas</p>
+      <div class="map__path" id="map-path"></div>
+      <button class="btn btn--secondary" id="map-restart-btn">Reiniciar todo</button>
+    </section>
+
+    <section class="card" id="question-screen" hidden>
+      <p class="card__category" id="question-category-label">Sumas</p>
       <h1 class="card__question" id="question-text">Cargando pregunta…</h1>
       <div class="options" id="options-container"></div>
       <p class="feedback" id="feedback-text" hidden></p>
@@ -37,7 +45,7 @@
       <p class="result__stat" id="result-score">Aciertos: 0 de 20</p>
       <p class="result__stat" id="result-percentage">Porcentaje: 0%</p>
       <p class="result__message" id="result-message"></p>
-      <button class="btn btn--primary" id="restart-btn">Jugar de nuevo</button>
+      <button class="btn btn--primary" id="restart-btn">Reiniciar todo</button>
     </section>
   </main>
 
