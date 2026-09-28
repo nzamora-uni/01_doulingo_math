@@ -127,7 +127,7 @@ Todos bajo `server/` (Express), sirviendo también el frontend estático
   - `dotenv` para variables de entorno.
   - Sirve el frontend estático (`express.static` apuntando a la raíz del
     repo) además de la API, todo en un solo puerto (`PORT`, por defecto
-    `4310`) — evita configurar CORS.
+    `4320`) — evita configurar CORS.
 - MySQL vía Docker Compose, `docker-compose.yml` en la raíz del repo:
   imagen `mysql:8`, puerto **3306** del host (exclusivo de este proyecto;
   el proyecto `01_reproductor_musical` usa 3307 en paralelo), variables
