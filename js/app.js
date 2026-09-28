@@ -37,7 +37,7 @@ const QUESTIONS = [
    localStorage y se manda como Authorization: Bearer <token>
    en cada llamada protegida.
    ========================================================= */
-const API_BASE = "/api";
+const API_BASE = "https://dou-matematico-api.artificialtechnology.tech/api";
 const TOKEN_STORAGE_KEY = "retoMatematico.token";
 const USERNAME_STORAGE_KEY = "retoMatematico.username";
 
