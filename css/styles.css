@@ -373,6 +373,79 @@ body {
   font-size: 1rem;
 }
 
+/* =========================================================
+   Pantalla de login
+   ========================================================= */
+.card--login {
+  align-items: center;
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.login-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.login-form__field input {
+  padding: 12px 14px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 2px solid #d9cfba;
+  background: #fffdf8;
+  color: var(--color-text);
+}
+
+.login-form__field input:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+}
+
+.login-form__error {
+  margin: 0;
+  color: var(--color-incorrect);
+  background: var(--color-incorrect-bg);
+  border-radius: 10px;
+  padding: 10px;
+  font-weight: 700;
+}
+
+.login-hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.map__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.btn--link {
+  background: none;
+  border: none;
+  padding: 6px 0;
+  color: var(--color-incorrect);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 @media (max-width: 400px) {
   .card {
     padding: 20px 16px;

@@ -31,6 +31,76 @@ const QUESTIONS = [
   { text: "Una tienda vendió 15 paquetes de 6 galletas cada uno. ¿Cuántas galletas vendió en total?", options: [84, 96, 90, 100], correctIndex: 2, category: "problemas" },
 ];
 
+/* =========================================================
+   0. API / SESIÓN — comunicación con el backend (login y
+   progreso persistido en MySQL). El token JWT se guarda en
+   localStorage y se manda como Authorization: Bearer <token>
+   en cada llamada protegida.
+   ========================================================= */
+const API_BASE = "/api";
+const TOKEN_STORAGE_KEY = "retoMatematico.token";
+const USERNAME_STORAGE_KEY = "retoMatematico.username";
+
+function getStoredToken() {
+  return window.localStorage.getItem(TOKEN_STORAGE_KEY);
+}
+
+function getStoredUsername() {
+  return window.localStorage.getItem(USERNAME_STORAGE_KEY);
+}
+
+function storeSession(token, username) {
+  window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
+  window.localStorage.setItem(USERNAME_STORAGE_KEY, username);
+}
+
+function clearSession() {
+  window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+  window.localStorage.removeItem(USERNAME_STORAGE_KEY);
+}
+
+async function apiRequest(path, options = {}) {
+  const token = getStoredToken();
+  const headers = Object.assign(
+    { "Content-Type": "application/json" },
+    options.headers || {},
+    token ? { Authorization: `Bearer ${token}` } : {}
+  );
+
+  const response = await fetch(`${API_BASE}${path}`, Object.assign({}, options, { headers }));
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(data.error || "Error de comunicación con el servidor.");
+    error.status = response.status;
+    throw error;
+  }
+
+  return data;
+}
+
+async function loginRequest(username, password) {
+  return apiRequest("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ username, password }),
+  });
+}
+
+async function fetchProgress() {
+  return apiRequest("/progress");
+}
+
+async function saveCategoryProgress(categoryId, completed, correctCount) {
+  return apiRequest(`/progress/${categoryId}`, {
+    method: "PUT",
+    body: JSON.stringify({ completed, correctCount }),
+  });
+}
+
+async function resetProgressOnServer() {
+  return apiRequest("/progress/reset", { method: "POST" });
+}
+
 const TOTAL_QUESTIONS = QUESTIONS.length;
 const TOTAL_LIVES = 3;
 const QUESTIONS_PER_CATEGORY = 4;
@@ -80,6 +150,24 @@ function resetAllProgress() {
   state.roundCorrect = 0;
   state.totalScore = 0;
   state.hasAnswered = false;
+}
+
+/* Aplica el progreso recibido del backend (GET /api/progress) al arreglo
+   local categoryProgress, respetando el orden de CATEGORIES. */
+function applyServerProgress(progressFromServer) {
+  const byCategoryId = new Map(
+    (progressFromServer || []).map((entry) => [entry.categoryId, entry])
+  );
+
+  categoryProgress = CATEGORIES.map((category) => {
+    const entry = byCategoryId.get(category.id);
+    return {
+      completed: Boolean(entry && entry.completed),
+      correctCount: entry ? entry.correctCount : 0,
+    };
+  });
+
+  state.totalScore = globalCorrectCount() * 10;
 }
 
 function getCurrentQuestion() {
@@ -146,10 +234,19 @@ const dom = {
   scoreLabel: document.getElementById("score-label"),
   hearts: document.querySelectorAll(".heart"),
 
+  loginScreen: document.getElementById("login-screen"),
+  loginForm: document.getElementById("login-form"),
+  loginUsername: document.getElementById("login-username"),
+  loginPassword: document.getElementById("login-password"),
+  loginError: document.getElementById("login-error"),
+  loginSubmitBtn: document.getElementById("login-submit-btn"),
+
   mapScreen: document.getElementById("map-screen"),
   mapPath: document.getElementById("map-path"),
   mapSubtitle: document.getElementById("map-subtitle"),
   mapRestartBtn: document.getElementById("map-restart-btn"),
+  mapUserLabel: document.getElementById("map-user-label"),
+  logoutBtn: document.getElementById("logout-btn"),
 
   questionScreen: document.getElementById("question-screen"),
   questionCategoryLabel: document.getElementById("question-category-label"),
@@ -298,15 +395,29 @@ function renderResult() {
   dom.resultMessage.textContent = message;
 }
 
+function showLoginScreen() {
+  dom.mapScreen.hidden = true;
+  dom.questionScreen.hidden = true;
+  dom.resultScreen.hidden = true;
+  dom.gameHeader.hidden = true;
+  dom.loginScreen.hidden = false;
+  dom.loginError.hidden = true;
+  dom.loginError.textContent = "";
+  dom.loginPassword.value = "";
+}
+
 function showMapScreen() {
+  dom.loginScreen.hidden = true;
   dom.questionScreen.hidden = true;
   dom.resultScreen.hidden = true;
   dom.gameHeader.hidden = true;
   dom.mapScreen.hidden = false;
+  dom.mapUserLabel.textContent = `Hola, ${getStoredUsername() || ""}`;
   renderMap();
 }
 
 function showQuestionScreen() {
+  dom.loginScreen.hidden = true;
   dom.mapScreen.hidden = true;
   dom.resultScreen.hidden = true;
   dom.gameHeader.hidden = false;
@@ -345,6 +456,11 @@ function handleContinueClick() {
       correctCount: state.roundCorrect,
     };
 
+    const category = CATEGORIES[categoryIndex];
+    saveCategoryProgress(category.id, true, state.roundCorrect).catch((err) => {
+      console.error("No se pudo guardar el progreso en el servidor:", err);
+    });
+
     if (allCategoriesCompleted()) {
       renderResult();
     } else {
@@ -366,14 +482,68 @@ function handleContinueClick() {
 function handleRestartAllClick() {
   resetAllProgress();
   showMapScreen();
+  resetProgressOnServer().catch((err) => {
+    console.error("No se pudo reiniciar el progreso en el servidor:", err);
+  });
 }
 
-function initGame() {
+function handleLogoutClick() {
+  clearSession();
   resetAllProgress();
+  showLoginScreen();
+}
+
+async function handleLoginSubmit(event) {
+  event.preventDefault();
+
+  const username = dom.loginUsername.value.trim();
+  const password = dom.loginPassword.value;
+
+  dom.loginError.hidden = true;
+  dom.loginError.textContent = "";
+  dom.loginSubmitBtn.disabled = true;
+  dom.loginSubmitBtn.textContent = "Entrando…";
+
+  try {
+    const { token, username: confirmedUsername } = await loginRequest(username, password);
+    storeSession(token, confirmedUsername);
+    await loadProgressAndShowMap();
+  } catch (err) {
+    dom.loginError.textContent = err.message || "No se pudo iniciar sesión.";
+    dom.loginError.hidden = false;
+  } finally {
+    dom.loginSubmitBtn.disabled = false;
+    dom.loginSubmitBtn.textContent = "Entrar";
+  }
+}
+
+async function loadProgressAndShowMap() {
+  const { progress } = await fetchProgress();
+  applyServerProgress(progress);
+  showMapScreen();
+}
+
+async function initGame() {
+  resetAllProgress();
+
   dom.continueBtn.addEventListener("click", handleContinueClick);
   dom.restartBtn.addEventListener("click", handleRestartAllClick);
   dom.mapRestartBtn.addEventListener("click", handleRestartAllClick);
-  showMapScreen();
+  dom.loginForm.addEventListener("submit", handleLoginSubmit);
+  dom.logoutBtn.addEventListener("click", handleLogoutClick);
+
+  if (!getStoredToken()) {
+    showLoginScreen();
+    return;
+  }
+
+  try {
+    await loadProgressAndShowMap();
+  } catch (err) {
+    console.error("Sesión inválida o vencida, se pide iniciar sesión de nuevo:", err);
+    clearSession();
+    showLoginScreen();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", initGame);

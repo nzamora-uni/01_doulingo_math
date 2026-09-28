@@ -25,7 +25,29 @@
       </div>
     </header>
 
-    <section class="card card--map" id="map-screen">
+    <section class="card card--login" id="login-screen">
+      <p class="map__brand">Dou Matemático</p>
+      <h1 class="map__title">Inicia sesión</h1>
+      <form id="login-form" class="login-form">
+        <label class="login-form__field">
+          <span>Usuario</span>
+          <input type="text" id="login-username" name="username" autocomplete="username" required>
+        </label>
+        <label class="login-form__field">
+          <span>Contraseña</span>
+          <input type="password" id="login-password" name="password" autocomplete="current-password" required>
+        </label>
+        <p class="login-form__error" id="login-error" hidden></p>
+        <button class="btn btn--primary" type="submit" id="login-submit-btn">Entrar</button>
+      </form>
+      <p class="login-hint">Usuario de prueba: <strong>Testor</strong> / <strong>7654321</strong></p>
+    </section>
+
+    <section class="card card--map" id="map-screen" hidden>
+      <div class="map__topbar">
+        <span id="map-user-label">Hola</span>
+        <button class="btn btn--link" id="logout-btn" type="button">Cerrar sesión</button>
+      </div>
       <p class="map__brand">Dou Matemático</p>
       <h1 class="map__title">Mapa del Reto Matemático</h1>
       <p class="map__subtitle" id="map-subtitle">0 de 5 categorías completadas</p>
