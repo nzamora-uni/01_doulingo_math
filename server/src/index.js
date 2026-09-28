@@ -13,7 +13,33 @@ const app = express();
 const PORT = Number(process.env.PORT || 4320);
 const REPO_ROOT = path.join(__dirname, "..", "..");
 
-app.use(cors());
+// Orígenes permitidos para CORS. En producción el frontend vive en Vercel
+// (dominio distinto al backend), así que ya no basta con "mismo origen".
+// CORS_ORIGIN admite una lista separada por comas; por defecto se permite
+// el frontend de Vercel y localhost para desarrollo.
+const DEFAULT_ORIGINS = [
+  "https://01-doulingo-math.vercel.app",
+  "http://localhost:4320",
+  "http://localhost:3000",
+];
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || DEFAULT_ORIGINS.join(","))
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Permite requests sin header Origin (curl, health checks, mismo origen).
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origen no permitido por CORS: ${origin}`));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+  })
+);
 app.use(express.json());
 
 app.get("/api/health", async (req, res) => {
